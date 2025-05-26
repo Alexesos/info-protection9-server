@@ -1,3 +1,5 @@
+const utils = require('./Utilities/Utilities');
+
 const express = require('express');
 const cors = require('cors');
 // const iconv = require('iconv-lite');
@@ -7,63 +9,39 @@ const PORT = 5000;
 app.use(cors());
 app.use(express.json());
 
-const _p = 3;
-const _q = 4;
+const _n = 85;
+const _e = 15;
+const x = 6;
+const k = 13;
+const _hashTable = [];
 
-const getPad = (base) => Math.ceil(Math.log(256) / Math.log(base));
+// API ENDPOINTS
 
-const stringToBase = (message, base) => {
-    const buf = iconv.encode(message, 'win1251');
-    const pad = getPad(base);
-    return Array.from(buf).map(b => 
-        b.toString(base).padStart(pad, '0')
-    ).join(' ');
-};
-
-const baseToBytes = (str, base) => {
-    const pad = getPad(base);
-    return str.split(' ').map(chunk => 
-        parseInt(chunk.padStart(pad, '0'), base)
-    ).filter(num => !isNaN(num));
-};
-
-const mpscEncode = (message, p, q) => {
-    const strInP = stringToBase(message, p);
-    const bytesFromP = baseToBytes(strInP, p);
-
-    const adjustedBytes = bytesFromP.map(b => (b + 1) % 256);
-    const strPtoQ = adjustedBytes.map(b => 
-        b.toString(q).padStart(getPad(q), '0')
-    ).join(' ');
-
-    const bytesFromQ = baseToBytes(strPtoQ, q);
-    const finalBytes = bytesFromQ.map(b => b % 256);
-
-    const folded = [];
-    for (let i = 0; i < bytesFromP.length; i++) {
-        folded.push((bytesFromP[i] ^ finalBytes[i]).toString(16).padStart(2, '0'));
-    }
-
-    return folded;
-};
-
-app.post('/api/hash/mpsc', (req, res) => {
+app.post('/api/write/EQS', (req, res) => {
+    console.log(`EQS REQUEST`);
     const { message } = req.body;
+    let keys = utils.genKeys();
+    console.log('KEYS', keys);
+    while (keys.d < 0) {
+        keys = utils.genKeys();
+    } 
+    const m = utils.moduleHash(message);
+    console.log('m', m);
+    const s = utils.getS(m, keys.d, keys.n);
+    console.log('s', s);
+    m.forEach((item, index) => {
+        _hashTable.push({[item]: s[index]});
+    });
 
-    const hash = mpscEncode(message, _p, _q);
-
-    console.log(hash);
-
-    res.json({ hash });
+    res.json({ _hashTable, keys });
 });
 
-app.post('/api/check/mpsc', (req, res) => {
-    const { message, hash } = req.body;
+app.post('/api/read/EQS', (req, res) => {
+    const { message, keys } = req.body;
+    const h = utils.getH(s, keys.e, keys.n);
 
-    const newHash = mpscEncode(message, _p, _q);
-    const isValid = newHash.join(',') === hash.join(',');
-
-    res.json({ isValid });
+    console.log(message);
+    console.log(h);
 });
 
 app.listen(PORT, () => {
