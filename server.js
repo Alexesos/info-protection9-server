@@ -66,6 +66,38 @@ app.post('/api/read/EQS', (req, res) => {
     res.json({ isValid });
 });
 
+app.post('/api/write/EQS2', (req, res) => {
+    console.log('\nAPI WRITE EQS GHAMAL\n');
+    const { message } = req.body;
+    const obj = utils.getGamahl(message);
+
+    console.log('Obj:', obj);
+
+    res.json({ result: obj });
+});
+
+app.post('/api/read/EQS2', (req, res) => {
+    console.log('\nAPI READ EQS GHAMAL\n');
+
+    const { message, publicKey, signature } = req.body;
+    console.log(`message:`, message, 'publickey:', publicKey, 'sign:', signature);
+    const { y, g, p } = publicKey;
+    const { a, b } = signature;
+
+    let m, isValid;
+
+    try {
+        m = +utils.zgortEncode(message);
+
+        isValid = utils.checkGamahl(y, a, b, p, g, m);
+    } catch (err) {
+        console.error(err);
+        res.json({ isValid: false });
+    }
+
+    res.json({ isValid });
+});
+
 app.listen(PORT, () => {
     console.log(`\n--- Сервер запущен: http://localhost:${PORT} ---\n`);
 });
