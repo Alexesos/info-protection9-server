@@ -33,15 +33,37 @@ app.post('/api/write/EQS', (req, res) => {
         _hashTable.push({[item]: s[index]});
     });
 
+    console.log(`TO h -> s: ${s}, e: ${keys.e}, n: ${keys.n}`);
+    const h = utils.getH(s, keys.e, keys.n);
+    console.log(`h: ${h}`);
+
     res.json({ _hashTable, keys });
 });
 
 app.post('/api/read/EQS', (req, res) => {
+    console.log(`EQS READ CALL`);
     const { message, keys } = req.body;
-    const h = utils.getH(s, keys.e, keys.n);
+    const [e, n] = keys;
 
-    console.log(message);
+    console.log(`Body: message=${message}, keys=${keys}, e=${e}, n=${n}`);
+
+    const array = message.split(',');
+    const s = array
+        .map(Number)
+        .filter((item, index) => index % 2 !== 0);
+    
+    const m = array
+        .map(Number)
+        .filter((item, index) => index % 2 === 0);
+
+    console.log(`s:`, s);
+
+    const h = utils.getH(s, e, n);
+    const isValid = m.join('') === h.join('');
     console.log(h);
+    console.log(isValid);
+
+    res.json({ isValid });
 });
 
 app.listen(PORT, () => {
