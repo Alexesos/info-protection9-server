@@ -101,7 +101,7 @@ const dGen = (fn, e) => {
         t2 = t;
     }
 
-    return t1;
+    return (t1 + fn) % fn;
 };
 
 const getWordNums = (word) => {

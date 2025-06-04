@@ -18,53 +18,34 @@ const _hashTable = [];
 // API ENDPOINTS
 
 app.post('/api/write/EQS', (req, res) => {
-    console.log(`EQS REQUEST`);
     const { message } = req.body;
-    let keys = utils.genKeys();
-    console.log('KEYS', keys);
-    while (keys.d < 0) {
-        keys = utils.genKeys();
-    } 
-    const m = utils.moduleHash(message);
-    console.log(`Module Hash:`, m);
-    console.log('m', m);
-    const s = utils.getS(m, keys.d, keys.n);
-    console.log('s', s);
-    m.forEach((item, index) => {
-        _hashTable.push({[item]: s[index]});
-    });
+    const h = utils.zgortEncode(message);
+    const { e, d, n } = utils.genKeys();
 
-    console.log(`TO h -> s: ${s}, e: ${keys.e}, n: ${keys.n}`);
-    const h = utils.getH(s, keys.e, keys.n);
-    console.log(`h: ${h}`);
+    let s = utils.modPow(h, d, n);
 
-    res.json({ _hashTable, keys });
+    // while (s === 1) {
+    //     s = utils.modPow(h, d, n);
+    // }
+
+    console.log(`response: s=${s}, e=${e}, n=${n}, h=${h}`);
+    res.json({ s, e, n, h });
 });
 
 app.post('/api/read/EQS', (req, res) => {
-    console.log(`EQS READ CALL`);
-    const { message, keys } = req.body;
-    const [e, n] = keys;
+    const { m, s, e, n } = req.body;
 
-    console.log(`Body: message=${message}, keys=${keys}, e=${e}, n=${n}`);
+    console.log(`request: m=${m}, s=${s}, e=${e}, n=${n}`);
 
-    const array = message.split(',');
-    const s = array
-        .map(Number)
-        .filter((item, index) => index % 2 !== 0);
-    
-    const m = array
-        .map(Number)
-        .filter((item, index) => index % 2 === 0);
+    const h2 = utils.modPow(s, e, n);
 
-    console.log(`s:`, s);
+    console.log(`h2=${h2}`);
 
-    const h = utils.getH(s, e, n);
-    const isValid = m.join('') === h.join('');
-    console.log(h);
-    console.log(isValid);
+    const isValid = Number(m) === h2;
 
-    res.json({ isValid });
+    console.log(`isValid=${isValid}`);
+
+    res.json({ isValid, m, h2 });
 });
 
 app.post('/api/write/EQS2', (req, res) => {
