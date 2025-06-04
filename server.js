@@ -26,6 +26,7 @@ app.post('/api/write/EQS', (req, res) => {
         keys = utils.genKeys();
     } 
     const m = utils.moduleHash(message);
+    console.log(`Module Hash:`, m);
     console.log('m', m);
     const s = utils.getS(m, keys.d, keys.n);
     console.log('s', s);
