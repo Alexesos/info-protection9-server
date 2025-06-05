@@ -1,12 +1,22 @@
-# React + Vite
+# Інструкція для встановлення проекту
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Через Git:
+1. Переконайтеся, що на ПК встановлений Git, Node.js
+2. Скопіювати посилання репозиторію і в терміналі виконати "git clone <*посилання*>"
+3. Перейти в папку проекту і встановити залежності "npm install"
+4. Запустити проект "node server"
 
-Currently, two official plugins are available:
+## Власноруч
+1. Переконайтеся, що на ПК встановлений Node.js
+2. Завантажити файли проекту за допомогою кнопки "Code"
+3. Перейти в папку проекту і встановити залежності "npm install"
+4. Запустити проект "node server"
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+# Якщо проект не запускається
+Спробуйте очистити і повторно встановити залежності "rm -rf node_modules", "npm install"
+Перевірте чи вільний порт "5000" на ПК, звільніть його, або змініть на інший шляхом зміни змінної "const port = 5000;"
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Примітки
+- Сервер необхідний для роботи застосунку, так як всі криптографічні операції виконує саме він
+- В ході посилання запитів на сервер та виконання операцій в терміналі будуть відображатися певні логи, 
+якщо вам потрібно, ви можете власноруч додавати логи за допомогою "console.log()" (див. синтаксис JavaScript)
